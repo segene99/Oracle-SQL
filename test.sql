@@ -156,7 +156,7 @@ select ename, substr(hiredate, 1,6) from emp
 where deptno = 20;
 
 select * from emp;
-
+,
 select substr(hiredate,-2,2), count(hiredate)
 from emp 
 group by substr(hiredate,-2,2);
@@ -185,3 +185,250 @@ select * from emp;
 select ename, trim('S' from ename), trim('H' from ename)
 from emp
 where ename = 'SMITH';
+
+--------------------------------1/19일 끝-------------------------------------
+--to_char
+select sysdate,
+to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss AM DAY')
+from dual;
+
+select ename,
+to_char(hiredate, 'yyyy"년" mm"월" dd"일" DAY')
+from emp;
+
+--local language setting
+select 
+to_char(sysdate, 'AM', 'NLS_DATE_LANGUAGE=JAPANESE') as JAPANESE,
+to_char(sysdate, 'AM', 'NLS_DATE_LANGUAGE=korean') as KOREAN
+from dual;
+
+--fm
+select to_char(123456,'fm000,000,000,000'), to_char(123456, '000,000,000,000'), to_char(123456, '000') from dual;
+
+select ename, sal,
+to_char(sal,'L999,999')
+from emp
+where deptno = 10;
+
+select ename, sal,
+to_char(sal,'$999,999')
+from emp
+where deptno = 10;
+
+--trunc
+select trunc((sysdate - to_date('2011-01-01', 'yyyy-mm-dd'))/365) from dual;
+select ename, to_char(hiredate, 'yyyymmdd') from emp where hiredate = to_date(19810220, 'yyyymmdd');
+
+--to date, to char
+select sysdate, systimestamp from dual;
+select to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), systimestamp from dual; --날짜자료형
+select to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'), systimestamp from dual; --문자자료형
+select to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), systimestamp, to_char(systimestamp, 'yyyy-mm-dd hh24:mi:ss.ff3') from dual;
+
+--sunday, sun 등은 오라클의 언어설정으로 적용안됨.
+
+select next_day(sysdate, '토요일'), next_day(sysdate, '금'), next_day(sysdate, 7), next_day(sysdate-8, '토요일') from dual;
+
+select last_day(sysdate), months_between(sysdate, to_date('2011-01-01', 'yyyy/mm/dd')), trunc(months_between(sysdate, to_date('2011-01-01', 'yyyy/mm/dd')) /12) from dual;
+
+select to_char(to_number('10,000','999,999')
++ to_number('20,000','999,999'), '00,000')
+as sum from dual;
+
+select ename, sal, comm, job, nvl(comm, 0) from emp;
+select avg(nvl(comm, 0)) from emp;
+select avg(comm) from emp;
+
+/*select ename, sal, comm, job, nvl(comm, 0), avg(nvl(comm,0)), avg(comm)
+from emp
+group by ename, sal, comm, job, nvl(comm, 0), avg(nvl(comm,0)), avg(comm);
+*/
+
+select ename, sal, comm from emp;
+select ename, sal, comm, sal*12+comm from emp;
+select ename, sal, comm, nvl(comm, 0), sal*12+nvl(comm,0),  nvl(to_char(MGR, 'fm9999'),'CEO') from emp;
+
+select ename, comm, mgr, sal, nvl2(comm, mgr, sal) from emp;
+
+select comm, empno from emp where comm=0;
+select comm, empno from emp where nvl(comm,0) = 0;
+select comm, empno from emp where comm != 0; --다른거
+
+select * from emp where job <> 'CLERK';
+select * from emp where job ^= 'CLERK';
+select * from emp where job != 'CLERK';
+
+select INSTR('DataBase', 'B') from dual;
+select INSTR('DataBase', 'b') from dual;
+
+select INSTR('DataBase', 'a',-1,1),INSTR('DataBase', 'a',3,2) from dual;
+
+--power(n,m) : N의 M제곱승, sqrt(n) : N의 루트값
+select power(5,2), round (sqrt(2),4) from dual;
+
+select ename , deptno,
+    decode(deptno, 10, 'ACCOUNTING', 20, 'RESEARCH', 'ETC'
+    )as dname 
+    from emp;
+
+select ename, job, sal, 
+    decode(job, 
+    'ANALYST', SAL*1.05,
+    'SALESMAN', SAL*1.1,
+    'MANAGER', SAL*1.15, 
+    'CLERK',SAL*1.2,
+    SAL*2.0
+    )as 급여인상
+from emp;
+
+select ename, deptno,
+    case 
+        when deptno = 10 then 'ACCOUNTING'
+        when deptno =20 then 'RESEARCH'
+            else 'OPERATIONS'
+    end as dname
+from emp;
+
+select ename, job, sal, 
+    case job when 'ANALYST' then (SAL*1.05)
+             when 'SALESMAN' then (SAL*1.1)
+             when 'MANAGER' then (SAL*1.15)
+             when 'CLERK' then (SAL*1.2)
+    end 급여인상
+from emp;
+
+
+create table dept01 as select * from dept;
+select * from dept where 1=0; --구조만 가져오기
+
+create table dept02 as select * from dept where 1=0;
+
+insert into dept01(deptno, dname, loc) -- 똑같은 값이 있으면 행추가가 된다 
+values(10, 'ETC');
+
+insert into dept02(deptno, dname, loc)
+values(10, 'ACCOUNTING', 'NEW YORK');
+
+select * from dept01;
+select * from dept02;
+
+
+insert into dept01(deptno, dname)
+values(10, 'ETC');
+
+commit;
+
+insert into dept01(deptno, dname)
+values(40, 'ETC');
+
+select * from dept01;
+select * from dept02;jhn  b  
+
+commit;
+
+insert into dept02 --(deptno, dname, loc)
+values (60, 'ETC', 'ETC');
+
+select * from dept02;
+
+commit;
+
+rollback;
+rollback;
+rollback;
+
+update emp05 set deptno = 30;
+
+create table emp05 as select * from emp;
+
+update emp05 set sal = sal * 1.1 where comm is not null; 
+select * from emp05;
+
+commit;
+rollback;
+
+update emp05
+set hiredate = sysdate
+where hiredate >= '1982-01-01';
+
+update emp05
+set hiredate = sysdate
+where substr(hiredate,1,2) >= '82';
+
+rollback;
+
+update emp05
+set comm = 500
+where deptno = 10;
+
+commit;
+
+
+update emp05
+set deptno = 20, job = upper('manager')
+where ename = upper('james');
+
+commit;
+
+delete emp05
+where deptno = 30;
+
+rollback;
+
+delete from emp05
+where deptno = 30;
+
+rollback;
+
+delete from emp05
+where substr(hiredate, 1,2) >= 82;
+
+rollback;
+
+rollback;
+
+rollback;
+
+--1
+select sal*12 as "연봉"
+from emp05;
+--2
+select ename, job, deptno from emp05 where job = 'SALESMAN';
+--3
+select * from emp05 where hiredate = '2001/12/03';
+
+update emp05
+set hiredate = '2001/12/03'
+where ename = 'SMITH';
+
+commit;
+--4
+select ename, job, hiredate, deptno from emp05 where deptno =20;
+--5
+select ename, sal
+from emp05
+where sal between 3000 and 5000; --where sal >= 3000 and sal <= 5000;
+--6
+select  empno, mgr, ename, deptno
+from emp05
+where sal >=1500 and mgr in (7698, 7902);
+--14
+select * from emp05 where nvl(comm,0)=0;
+--15
+update emp05
+set sal = sal + 200
+where substr(hiredate,1,2) = '80';
+--16
+update emp05
+set sal = sal*1.1
+where sal >= 3000;
+rollback;
+--17
+delete from emp05 where hiredate >= '2001/01/01';
+rollback;
+--18
+select deptno, avg(sal) as 연봉평균, sum(comm) as 커미션합계
+from emp05
+group by deptno;
+
+
