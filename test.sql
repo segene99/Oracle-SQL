@@ -1,434 +1,286 @@
-select * from emp;
+--사원번호(EMPNO), 사원명(ENAME), 급여(SAL) 
+create table EMP01(
+    EMPNO number(4), --정수 4자리 숫자
+    ENAME varchar2(200), --200BYTE까지
+    SAL number(7,2) --정수 포함 소숫점(2자리)까지 7자리 숫자
+);
 
-select empno, ename from emp
-where ename like '_A%';
+insert into emp01
+values (0000, '첫번째', 2500);
 
---null 값 가져오기
-select * from emp
-where comm is null;
+rollback;
 
---집계함수
-select * from EMP order by deptno;
+insert into emp01
+values (0000, '첫번째', 2500);
 
---count
-select count(*) from emp where deptno = 30; --null값도 반영
-select count(comm) from emp; --null값 미반영
--- avg
-select deptno, job, avg(sal) 
-from emp 
-group by deptno,job -- = deptno||job
-order by deptno;
+desc emp01;
 
-select deptno, sum(sal)/count(*) from emp group by deptno order by deptno;
+create table DEPT01 (
+    DEPTNO number(2),
+    DNAME varchar2(20),
+    LOC varchar2(20) 
+);
 
+alter table emp01 add (JOB varchar2(200));
 
+desc emp01;
 
---group by
-select deptno, sum(sal) from emp group by deptno;
+alter table DEPT01 add (CREDATE date);
 
-select deptno, MAX(SAL), min(sal) from emp group by deptno;
+desc dept01;
 
-select sal, count(*) from emp group by sal;
+alter table emp01 modify (job char);
 
-select sum(comm) / count(*) from emp; --12
+rollback;
 
-select sum(comm) / count(comm) from emp; --4
+desc emp01;
 
-select avg(comm) from emp;
+alter table emp01 modify (job varchar2(200));
 
-select comm from emp order by comm;
+DESC emp01;
 
-select comm, count(*) from emp group by comm; --null = 8 
-select comm, count(comm) from emp group by comm; --null =0
+alter table emp01 modify(job varchar2(30));
 
---부서별로 연봉이 2000 이상인 경우 부서별 연봉의 평균을 산출하세요.
-select deptno, avg(sal)
-from emp 
-where sal >= 2000 
-group by deptno
-order by deptno;
+insert into emp01 values (1, '두번째', 5000, null);
+insert into emp01 values (2, '세번째', 1500, 'salesman');
+insert into emp01 values (3, '네번째', 1800, null);
+insert into emp01 values (4, '다섯째', 3600, null);
 
---사원테이블에서 관리자가 존재하는 사람들 중에서 관리자별, 직책별로 나누어 연봉의 합계를 구하세요
+alter table emp01 modify (job varchar2(8));
+alter table emp01 modify (job varchar2(6));
+alter table emp01 modify (job number(10));
 
-select mgr, job, sum(sal)
-from emp
-where mgr is not null -- = '7%'
-group by mgr, job
-order by mgr;
+update emp01 set job = '';
 
---사원테이블에서 연봉이 2500이상인 사원에 대하여 부서별 인원수를 검색하세요
-select deptno, count(deptno)
-from emp
-where sal >= 2500
-group by deptno
-order by deptno;
+commit;
 
-select * from emp;
+alter table emp01 modify(empno number(2));
 
---부서별로 평균연봉이 2000 이상인 경우 부서별 연봉의 평균을 산출하세요.
-select deptno, avg(sal)
-from emp 
-having avg(sal) >= 2000 
-group by deptno
-order by deptno;
+desc emp01;
 
---
-select deptno, avg(sal), sum(sal)
-from emp
-having count(deptno) >= 5
-group by deptno
-order by deptno;
+alter table emp01 modify(empno number(1));
 
-select * from emp;
+desc emp01;
 
-select deptno, avg(sal)
-from emp
-where sal >= 1000
-group by deptno
-having avg(sal) >= 2000
-order by deptno;
+alter table dept01 modify(loc varchar2(5000));
 
-select job, deptno, sum(sal), count(*)
-from emp
-where deptno = 30
-group by job, deptno;
+alter table dept01 drop (loc);
+rollback;
 
+desc dept01;
 
-select * from dual;
+select * from dept01;
 
-select floor(34.5678) from dual;
+alter table dept01 add (job varchar2(30));
 
-select round(345.678, 2) from dual; --345.68
-select round(345.678, 1) from dual;--345.7
-select round(345.678) from dual; --346
-select round(345.678, -1) from dual; --350
-select round(345.678, -2) from dual; --300
+alter table dept01 drop (credate);
 
-select mod(5, 3) from dual;
+desc dept01;
 
-select empno, ename, job from emp where mod(empno, 2) = 0;
+alter table dept01 add (loc varchar2(20));
 
---sysdate
-select sysdate from dual;
+rename dept01 to dept02;
 
-select sysdate from dual;
-select sysdate-1 어제, sysdate 오늘, sysdate+1 내일 from dual;
+create table test01;
 
-select ename, sysdate, hiredate, round((sysdate - hiredate)/365) from emp where deptno = 10;
+drop table dept02;
 
-select hiredate, round(hiredate, 'MONTH') from emp where deptno = 10;
+create table emp01 as select * from emp;
 
-select round (to_date('2023-01-16','yyyy-MM-DD'),'MONTH') from dual;
+drop table emp01;
 
-select hiredate, round(hiredate, 'YEAR') from emp where deptno = 10;
+delete emp01;
 
-select upper('DataBase'), lower('DataBase') from dual;
+rollback;
 
-select initcap('DATABASE PROGRAM') initcap FROM DUAL;
+truncate table emp01;
 
-select ename||', '||job wc from emp;
+rollback;
 
-select concat(concat('Data', 'Base'),'Base') from dual;
+drop table emp01;
 
-/* 
-문자: 
-길이: length
-용량: byte => lengthb
-*/
+create table emp01 as select * from emp where 1=0;
 
-/*
-'가나다가' => 4자 --3bytes, 하위버젼은 2bytes
-영어 , 숫자, 특수문자 => 1byte
-length(글자의 개수), lengthb(메모리에 차지하는 바이트 수);
-*/
+drop table emp01;
 
-select length('data'), lengthb('data'),
-length('오라클'), lengthb('오라클')
-from dual;
+create table emp01 as select * from emp where 0=0;
+
+create table emp02 as
+select empno, ename, job from emp;
+
+create table emp03 as
+select empno, ename, job from emp where 1=0;
+
+drop table emp01;
+drop table emp02;
+drop table emp03;
+
+create table emp01(
+    empno number(4),
+    ename varchar2(10),
+    job varchar2(9),
+    deptno number(4)
+);
+
+insert into emp01 values(null, '', 'SALESMAN', 30);
+insert into emp01 values(null, 'TOM','SALESMAN', 30);
+commit;
+select * from emp01 where ename='';
+
+drop table emp01;
+
+create table emp02(
+    empno number(4) not null,
+    ename varchar2(10) not null,
+    job varchar2(9),
+    deptno number(4)
+);
+
+INSERT INTO emp02 values(null, null, 'SALESMAN', 10);
+insert into emp02 values(1401, 'TOM', 'SALESMAN', 10);
+
+create table emp03(
+    empid varchar2(20) unique not null,
+    empno number(4) unique,
+    ename varchar2(10) not null,
+    job varchar2(9),
+    deptno number(4)
+);
+
+insert into emp03 values('death', 6778, 'JAMES', 'SALESMAN', 7777);
+insert into emp03 values('MATRIX', 6778, 'SMITH', 'MANAGER', 7778);
+insert into emp03 values('death', 7778, 'JAMES', 'SALESMAN', 7777);
+
+commit;
+
+insert into emp03 values(null,null,'JONES', 'SALESMAN',10);
+insert into emp03 values('emp05',null,'JONES','SALESMAN',10);
+insert into emp03 values('emp05',null,'JONES','SALESMAN',10);
+
+select constraint_name, constraint_type, table_name
+from user_constraints
+where table_name = 'EMP02';
+commit;
+
+create table emp04 (
+    empno number(4) primary key,
+    ename varchar2(10) not null,
+    job varchar2(9),
+    deptno number(4)
+);
+
+insert into emp04 (empno, ename, job, deptno)
+values(7499, 'ALLEN', 'SALESMAN',30);
+
+desc emp04;
+
+insert into emp04 values (7499, 'JONES','MANAGER',20);
+insert into emp04 values (NULL, 'JONES','MANAGER',20);
+insert into emp04 values (7500, 'JONES','MANAGER',20);
 
 select *
-from emp
-where length(ename) <= 4;
+from user_constraints
+where table_name = 'EMP02';
 
-select substr('DataBase',-4,3) from dual;
+--empno number(4) constraint emp_empno_pk primary key
 
-select ename, substr(hiredate, 1,6) from emp
-where deptno = 20;
+create table dept01 (
+    deptno number(2) constraint dept01_deptno_pk primary key,
+    dname varchar2(15),
+    loc varchar2(15)
+);
 
-select * from emp;
-,
-select substr(hiredate,-2,2), count(hiredate)
-from emp 
-group by substr(hiredate,-2,2);
+select * from user_constraints;
 
-select substr(hiredate, -2,2), count(substr(hiredate,-2,2))
-from emp
-group by substr(hiredate,-2,2);
+create table dept02 (
+    deptno number(2),
+    dname varchar2(15),
+    loc varchar2(15),
+    constraint dept02_dno_dnam_pk primary key(deptno, dname)
+);
+
+insert into dept02 values (15, '영업','서울'); --pk : 15'영업'
+insert into dept02 values(15, '회계', '경기');--pk : 15'회계'
+insert into dept02 values(15, '회계', '경기');
+insert into dept02 values(null, '회계', '경기');
+
+create table dept03 as select * from dept02 where 1=0;
+
+alter table dept03 add constraint dept03_deptno_pk primary key(deptno);
+
+alter table dept03 modify (dname not null);
+alter table dept03 drop constraint DEPT03_DEPTNO_PK;
+alter table dept03 add constraint DEPT03_DEPTNO_PK primary key(deptno);
+
+insert into dept03 values(15, '영업', '서울');
+commit;
+
+alter table dept03 drop constraint DEPT03_DEPTNO_PK;
+
+create table emp05 (
+    empno number(4) primary key,
+    ename varchar2(10) not null,
+    gender varchar2(1 char) check (gender in('남','여'))
+);
+
+INSERT INTO EMP05
+VALUES(7566, 'JONES','M');
+
+INSERT INTO EMP05 VALUES(7566, 'JONES','남');
+
+INSERT INTO EMP05 VALUES(7566, 'JONES','남남');
+INSERT INTO EMP05 VALUES(7577, 'LEMON','여여');
 
 
-select substrb('데이터베이스', 3, 4),
-substrb('데이터베이스', 3, 4),
-substrb('데이터베이스', 1, 6),
-substrb('데이터베이스', 2, 11)
-from dual;
+create table emp07 (
+    empno number(4) primary key,
+    ename varchar2(10) not null,
+    gender varchar2(1) check (gender in ('M','F')),
+    sal number(7,2) check(sal >=1000 and sal<=10000)
+);
 
-select lpad('DataBase', 10, '0') from dual; 
-select rpad('DataBase', 10, '0') from dual;
+insert into emp07 values(1234, 'TOMS', 'M', 1500);
 
-select ltrim('aaaaDataBase Programingaaaa', 'a'),
-rtrim('aaaaDataBase Programingaaaa', 'a'),
-trim('a' from 'aaaaDataBase Programingaaa')
-from dual;
-
-select * from emp;
-
-select ename, trim('S' from ename), trim('H' from ename)
-from emp
-where ename = 'SMITH';
-
---------------------------------1/19일 끝-------------------------------------
---to_char
-select sysdate,
-to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss AM DAY')
-from dual;
-
-select ename,
-to_char(hiredate, 'yyyy"년" mm"월" dd"일" DAY')
-from emp;
-
---local language setting
-select 
-to_char(sysdate, 'AM', 'NLS_DATE_LANGUAGE=JAPANESE') as JAPANESE,
-to_char(sysdate, 'AM', 'NLS_DATE_LANGUAGE=korean') as KOREAN
-from dual;
-
---fm
-select to_char(123456,'fm000,000,000,000'), to_char(123456, '000,000,000,000'), to_char(123456, '000') from dual;
-
-select ename, sal,
-to_char(sal,'L999,999')
-from emp
-where deptno = 10;
-
-select ename, sal,
-to_char(sal,'$999,999')
-from emp
-where deptno = 10;
-
---trunc
-select trunc((sysdate - to_date('2011-01-01', 'yyyy-mm-dd'))/365) from dual;
-select ename, to_char(hiredate, 'yyyymmdd') from emp where hiredate = to_date(19810220, 'yyyymmdd');
-
---to date, to char
-select sysdate, systimestamp from dual;
-select to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), systimestamp from dual; --날짜자료형
-select to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'), systimestamp from dual; --문자자료형
-select to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), systimestamp, to_char(systimestamp, 'yyyy-mm-dd hh24:mi:ss.ff3') from dual;
-
---sunday, sun 등은 오라클의 언어설정으로 적용안됨.
-
-select next_day(sysdate, '토요일'), next_day(sysdate, '금'), next_day(sysdate, 7), next_day(sysdate-8, '토요일') from dual;
-
-select last_day(sysdate), months_between(sysdate, to_date('2011-01-01', 'yyyy/mm/dd')), trunc(months_between(sysdate, to_date('2011-01-01', 'yyyy/mm/dd')) /12) from dual;
-
-select to_char(to_number('10,000','999,999')
-+ to_number('20,000','999,999'), '00,000')
-as sum from dual;
-
-select ename, sal, comm, job, nvl(comm, 0) from emp;
-select avg(nvl(comm, 0)) from emp;
-select avg(comm) from emp;
-
-/*select ename, sal, comm, job, nvl(comm, 0), avg(nvl(comm,0)), avg(comm)
-from emp
-group by ename, sal, comm, job, nvl(comm, 0), avg(nvl(comm,0)), avg(comm);
+/*
+형식: 
+column명 데이터타입 references 부모테이블명(부모테이블의 pk의 column명 또는 uk의 column명)
 */
 
-select ename, sal, comm from emp;
-select ename, sal, comm, sal*12+comm from emp;
-select ename, sal, comm, nvl(comm, 0), sal*12+nvl(comm,0),  nvl(to_char(MGR, 'fm9999'),'CEO') from emp;
+create table emp06 (
+    empno number(4) primary key,
+    ename varchar2(10) not null,
+    job varchar2(9),
+    dept number(4) references dept01(deptno)
+);
 
-select ename, comm, mgr, sal, nvl2(comm, mgr, sal) from emp;
+select * from user_constraints where table_name = 'EMP06';
 
-select comm, empno from emp where comm=0;
-select comm, empno from emp where nvl(comm,0) = 0;
-select comm, empno from emp where comm != 0; --다른거
+drop table emp06;
 
-select * from emp where job <> 'CLERK';
-select * from emp where job ^= 'CLERK';
-select * from emp where job != 'CLERK';
+create table emp06 (
+    empno number(4) primary key,
+    ename varchar2(10) not null,
+    job varchar2(9),
+    dno number(4) references dept01(deptno)
+);
 
-select INSTR('DataBase', 'B') from dual;
-select INSTR('DataBase', 'b') from dual;
+insert into emp06 values (7566, 'JONES','MANAGER',50);
+insert into emp06 values (7988, 'JERRY','CEO',90);
+insert into emp06 values (7988, 'JERRY','CEO',NULL);
 
-select INSTR('DataBase', 'a',-1,1),INSTR('DataBase', 'a',3,2) from dual;
+drop table dept01;
+drop table dept01 cascade constraints;
 
---power(n,m) : N의 M제곱승, sqrt(n) : N의 루트값
-select power(5,2), round (sqrt(2),4) from dual;
+drop table emp06;
 
-select ename , deptno,
-    decode(deptno, 10, 'ACCOUNTING', 20, 'RESEARCH', 'ETC'
-    )as dname 
-    from emp;
+create table emp08 (
+    empno number(4) primary key,
+    ename varchar2(10) not null,
+    job varchar2(9),
+    deptno number(4),
+    dname varchar2(10),
+    constraint emp08_deptno_fk foreign key(deptno, dname)
+    references dept02(deptno, dname)
+);
 
-select ename, job, sal, 
-    decode(job, 
-    'ANALYST', SAL*1.05,
-    'SALESMAN', SAL*1.1,
-    'MANAGER', SAL*1.15, 
-    'CLERK',SAL*1.2,
-    SAL*2.0
-    )as 급여인상
-from emp;
-
-select ename, deptno,
-    case 
-        when deptno = 10 then 'ACCOUNTING'
-        when deptno =20 then 'RESEARCH'
-            else 'OPERATIONS'
-    end as dname
-from emp;
-
-select ename, job, sal, 
-    case job when 'ANALYST' then (SAL*1.05)
-             when 'SALESMAN' then (SAL*1.1)
-             when 'MANAGER' then (SAL*1.15)
-             when 'CLERK' then (SAL*1.2)
-    end 급여인상
-from emp;
-
-
-create table dept01 as select * from dept;
-select * from dept where 1=0; --구조만 가져오기
-
-create table dept02 as select * from dept where 1=0;
-
-insert into dept01(deptno, dname, loc) -- 똑같은 값이 있으면 행추가가 된다 
-values(10, 'ETC');
-
-insert into dept02(deptno, dname, loc)
-values(10, 'ACCOUNTING', 'NEW YORK');
-
-select * from dept01;
-select * from dept02;
-
-
-insert into dept01(deptno, dname)
-values(10, 'ETC');
-
-commit;
-
-insert into dept01(deptno, dname)
-values(40, 'ETC');
-
-select * from dept01;
-select * from dept02;jhn  b  
-
-commit;
-
-insert into dept02 --(deptno, dname, loc)
-values (60, 'ETC', 'ETC');
-
-select * from dept02;
-
-commit;
-
-rollback;
-rollback;
-rollback;
-
-update emp05 set deptno = 30;
-
-create table emp05 as select * from emp;
-
-update emp05 set sal = sal * 1.1 where comm is not null; 
-select * from emp05;
-
-commit;
-rollback;
-
-update emp05
-set hiredate = sysdate
-where hiredate >= '1982-01-01';
-
-update emp05
-set hiredate = sysdate
-where substr(hiredate,1,2) >= '82';
-
-rollback;
-
-update emp05
-set comm = 500
-where deptno = 10;
-
-commit;
-
-
-update emp05
-set deptno = 20, job = upper('manager')
-where ename = upper('james');
-
-commit;
-
-delete emp05
-where deptno = 30;
-
-rollback;
-
-delete from emp05
-where deptno = 30;
-
-rollback;
-
-delete from emp05
-where substr(hiredate, 1,2) >= 82;
-
-rollback;
-
-rollback;
-
-rollback;
-
---1
-select sal*12 as "연봉"
-from emp05;
---2
-select ename, job, deptno from emp05 where job = 'SALESMAN';
---3
-select * from emp05 where hiredate = '2001/12/03';
-
-update emp05
-set hiredate = '2001/12/03'
-where ename = 'SMITH';
-
-commit;
---4
-select ename, job, hiredate, deptno from emp05 where deptno =20;
---5
-select ename, sal
-from emp05
-where sal between 3000 and 5000; --where sal >= 3000 and sal <= 5000;
---6
-select  empno, mgr, ename, deptno
-from emp05
-where sal >=1500 and mgr in (7698, 7902);
---14
-select * from emp05 where nvl(comm,0)=0;
---15
-update emp05
-set sal = sal + 200
-where substr(hiredate,1,2) = '80';
---16
-update emp05
-set sal = sal*1.1
-where sal >= 3000;
-rollback;
---17
-delete from emp05 where hiredate >= '2001/01/01';
-rollback;
---18
-select deptno, avg(sal) as 연봉평균, sum(comm) as 커미션합계
-from emp05
-group by deptno;
-
-
+insert into emp08 values(15, '영업', '오리',234,'새새');
