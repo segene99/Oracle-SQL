@@ -1,94 +1,95 @@
+set serveroutput on
+
+create or replace function test_func(p_n1 emp.ename%type)
+return dept.dname%type --리턴타입
+
+is
+v_dname dept.dname%type; --리턴타입과 같은 자료형, VARCHAR2(14 BYTE)
+v_deptno emp.deptno%type; --NUMBER(2,0)
+
+begin
+select deptno into v_deptno from emp
+where ename = p_n1;
+
+select dname into v_dname from dept
+where deptno = v_deptno;
+
+return v_dname;
+end;
+/
+
+--select test_func(p_n1 emp.ename%type) from dual;
+--select test_func('SMITH') from dual;
+--select * from emp;
 
 declare
-    --한 줄 주서기 변수 선언
-    va integer := 2**2*3**2; --int 36
-    vb positive := 5; -- 0미포함 양수, null 가능
-    vc signtype; -- -1, 0, 1, null 만 가능
-    vd naturaln := 0; -- 0포함 양수, null 불가
-    ce constant varchar2(20) := '상수 테스트';
+    v_dname dept.dname%type;
 begin
-    /* 여러줄 주석: 실행부 dbms_output을 이용한 변수 값 출력*/
-    --에러
-    -- ce := '상수값 변경';
-    dbms_output.put_line('va = '|| va ||', vb = '|| vb || ', vc = '|| vc || ', vd = '|| vd);
-    dbms_output.put_line('va = '|| to_char(va));
-    dbms_output.put_line('상수 ce = '|| ce);
+    select test_func() into v_dname from dual;    
+    dbms.output.put_line('v_dname : '|| v_dname);
+end;
+/
+
+create or replace function topname_fnc
+return emp.ename%type
+is
+    v_ename emp.ename%type;
+begin
+    select ename into v_ename from emp
+    where sal =( select max(sal) from emp);
+    
+    return v_ename;
+end;
+/
+declare
+    v_ename emp.ename%type;
+begin
+select topname_fnc() into v_ename from dual;
+dbms_output.put_line('v_ename: ' || v_ename);
+end;
+/
+/*
+- `create or replace function 함수명 [(매개변수들)]`
+- `return 리턴할변수명 리턴할변수의자료형`
+- `is 변수 선언문;`
+- `…`
+- `begin`
+- `실행문;`
+- `…`
+- `return 리턴할 변수명;`
+- `end;`
+- `/`
+*/
+
+create or replace function my_mul(n1 number, n2 number)
+return number
+is
+v_result number;
+begin
+v_result := n1*n2; 
 end;
 /
 
 declare
-    vempno number(4); --v : variable
-    vename varchar2(10);
+    v_result number;
 begin
-    DECLARE
-        vempno number(4); --v : variable
-        vename varchar2(10);
-    BEGIN
-    vempno := 7788;
-    vename := 'SMITH';
-    dbms_output.put_line('사번 / 이름 / BOOLEAN');
-    dbms_output.put_line('----------------------------------');
-    dbms_output.put_line(vempno || ' / ' || vename);
-    end;
+    select my_mul(5,3) into v_result from dual;
+    dbms_output.put_line(v_result);
 end;
-/
 
---set timing on
-DECLARE
-   --테이블의 컬럼의 데이터타입과 일치시켜 주는 것이 좋다. 에러 예방
-   --스칼라 변수 선언
-   VEMPNO NUMBER(4);
-   VENAME VARCHAR2(10);
-   VDEPTNO NUMBER(2);
-   VDNAME VARCHAR2(14);
-BEGIN
-   --테이블 안의 데이터를 받아오는 경우 select절 안에 into를 이용한다.
-   --select절 컬럼의 데이터타입, 개수, 순서와 
-   --INTO절의 변수의 데이터타입, 개수, 순서가 일치해야 한다.
-   SELECT E.EMPNO, E.ENAME, D.DEPTNO, D.DNAME
-   --변수 대소문자 구분 안 함.
-   INTO vempno, vename , vdeptno , vdname
-   FROM EMP E, DEPT D
-   WHERE E.DEPTNO = D.DEPTNO AND E.ENAME = 'SMITH';
+/*
+- create or replace procedure 프로시저명 (p1 [in | out| inout] 데이터타입 := 값,…)]
+- is [as]  // is 또는 as 가능: 별 차이 없다.
+- 변수, 상수 등 선언
+- begin
+- 실행문;
+- …
+- [exception
+- 예외처리문;
+- ]
+- end [프로시저명];
+- /
+*/
 
-   DBMS_OUTPUT.PUT_LINE('사번 / 이름 / 부서번호 / 부서명'); 
-   DBMS_OUTPUT.PUT_LINE('------------------------------------');
-   DBMS_OUTPUT.PUT_LINE(VEMPNO || ' / ' || VENAME || ' / ' || VDEPTNO || ' / ' || VDNAME );
-END;
-/ 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+set serveroutput on
 
