@@ -1,95 +1,26 @@
-set serveroutput on
+drop table dept01;
+create table dept01 as select * from dept;
 
-create or replace function test_func(p_n1 emp.ename%type)
-return dept.dname%type --리턴타입
+savepoint c1; --c1 세이브포인트
+delete from dept01 where deptno=40; --40번 삭제
+select * from dept01;
+commit; -- 10,20,30
 
-is
-v_dname dept.dname%type; --리턴타입과 같은 자료형, VARCHAR2(14 BYTE)
-v_deptno emp.deptno%type; --NUMBER(2,0)
+delete from dept01 where deptno=30; --10,20
+select * from dept01; --10,20
 
-begin
-select deptno into v_deptno from emp
-where ename = p_n1;
+delete from dept01 where deptno=20; --10
+savepoint c2; --c2 세이브포인트
+select * from dept01; --10
 
-select dname into v_dname from dept
-where deptno = v_deptno;
+delete from dept01 where deptno=10; -- 데이터 없음
+rollback to c2; -- c2 -> 10번인 데이터 있음
+select * from dept01; -- 10
 
-return v_dname;
-end;
-/
+rollback to c1; --c1 -> 10,20번인 데이터 있음
+select * from dept01; -- 10,20
 
---select test_func(p_n1 emp.ename%type) from dual;
---select test_func('SMITH') from dual;
---select * from emp;
+rollback; -- commit후의 값 복원
+select * from dept01; -- 10,20,30
 
-declare
-    v_dname dept.dname%type;
-begin
-    select test_func() into v_dname from dual;    
-    dbms.output.put_line('v_dname : '|| v_dname);
-end;
-/
-
-create or replace function topname_fnc
-return emp.ename%type
-is
-    v_ename emp.ename%type;
-begin
-    select ename into v_ename from emp
-    where sal =( select max(sal) from emp);
-    
-    return v_ename;
-end;
-/
-declare
-    v_ename emp.ename%type;
-begin
-select topname_fnc() into v_ename from dual;
-dbms_output.put_line('v_ename: ' || v_ename);
-end;
-/
-/*
-- `create or replace function 함수명 [(매개변수들)]`
-- `return 리턴할변수명 리턴할변수의자료형`
-- `is 변수 선언문;`
-- `…`
-- `begin`
-- `실행문;`
-- `…`
-- `return 리턴할 변수명;`
-- `end;`
-- `/`
-*/
-
-create or replace function my_mul(n1 number, n2 number)
-return number
-is
-v_result number;
-begin
-v_result := n1*n2; 
-end;
-/
-
-declare
-    v_result number;
-begin
-    select my_mul(5,3) into v_result from dual;
-    dbms_output.put_line(v_result);
-end;
-
-/*
-- create or replace procedure 프로시저명 (p1 [in | out| inout] 데이터타입 := 값,…)]
-- is [as]  // is 또는 as 가능: 별 차이 없다.
-- 변수, 상수 등 선언
-- begin
-- 실행문;
-- …
-- [exception
-- 예외처리문;
-- ]
-- end [프로시저명];
-- /
-*/
-
-set serveroutput on
 
