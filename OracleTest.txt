@@ -1,0 +1,105 @@
+
+-- 사원 테이블
+-- 사원아이디, 이름, 업무, 부서아이디, 급여, 보너스, 관리자아이디, 입사일
+
+CREATE TABLE employ (
+    empid  NUMBER(4) CONSTRAINT employ_id_pk PRIMARY KEY,
+    name  VARCHAR2(10) NOT NULL,
+    job  VARCHAR2(10) NOT NULL,
+    deptid  NUMBER(3),
+    salary  NUMBER(4) NOT NULL,
+    bonus  NUMBER(3),
+    mgrid  NUMBER(4),
+    hiredate  DATE  NOT NULL
+);
+
+
+
+-- 사원 데이터
+
+INSERT INTO employ
+ VALUES (6200,'김철수','이사',200, 5000,NULL,NULL,'1997-12-17');
+INSERT INTO employ
+ VALUES (6311,'전우치','부장',100,3500,NULL,6200,'1998-12-17');
+INSERT INTO employ
+ VALUES (7489,'송아지','세일즈',400,1850,200,6321,'1999-02-27');
+INSERT INTO employ
+ VALUES (7522,'오라클','세일즈',400,1850,300,6321,'1998-02-28');
+INSERT INTO employ
+ VALUES (6321,'강아지','부장',400,3800,500,6200,'1999-04-20');
+INSERT INTO employ
+ VALUES (6351,'고구려','부장',300,2850,NULL,6200,'2000-05-31');
+INSERT INTO employ
+ VALUES (7910,'이영희','경리',300,1000,NULL,6351,'2001-05-01');
+INSERT INTO employ
+ VALUES (6361,'이발소','부장',200,3200,NULL,6200,'2000-06-09');
+INSERT INTO employ
+ VALUES (7878,'박수처','연구직',200,3000,NULL,6361,'2001-06-05');
+INSERT INTO employ
+ VALUES (7854,'최우수','세일즈',400,1500,0,6321,'2001-09-08');
+INSERT INTO employ
+ VALUES (7872,'임꺽정','사무직',100,1500,NULL,6311,'2001-02-12');
+INSERT INTO employ
+ VALUES (7920,'김말이','사무직',300,1050,NULL,6351,'2001-03-18');
+INSERT INTO employ
+ VALUES (7901,'정동진','연구직',NULL,3000,NULL,NULL,'2001-12-03');
+INSERT INTO employ
+ VALUES (7933,'홍길동','사무직',200,1050,NULL,6361,'2002-01-02');
+
+
+
+-- 문제
+
+--1. 사원의 급여에 12를 곱한 결과만 출력되도록 수식을 적용하고,   수식의 별칭을 "연봉" 으로 표시하시오.
+select salary*12 연봉 from employ;
+
+
+--2. 업무가 '세일즈' 인 사원의 이름, 업무, 부서아이디를 검색하시오.
+select name, job, empid from employ where job = '세일즈';
+
+--3. 입사일이 '2001년 12월 3일' 인 사원을 검색하시오.
+select * from employ where hiredate = '2001/12/03';
+
+--4. 부서아이디가 200 인 사원의 이름, 업무, 입사일, 부서아이디를 검색하시오.
+select name, job, hiredate, deptid from employ where deptid = 200;
+
+--5. 급여가 3000 이상이고 5000 이하인 사원의 이름, 급여를 검색하시오.
+select name, salary from employ where salary between 3000 and 5000;
+
+--6. 관리자아이디가 6311, 6361, 6351 중에서 해당하는 경우의 사원아이디, 관리자아이디, 이름, 부서아이디를 검색하시오.
+select empid, mgrid, name, deptid from employ where mgrid in(6311,6361,6351);
+
+--7. 업무가 '사무직' 이거나 '경리' 인 사원을 검색하시오.
+select * from employ where job = '사무직' or job = '경리';
+
+--8. 급여가 3000 이상이고 업무가 '부장' 인 사원을 검색하시오.
+select * from employ where salary > 3000 and job ='부장';
+
+--9. 업무가 ( '세일즈' 이거나 '사무직' ) 이 아닌 사원을 검색하시오.
+select * from employ where job not in('세일즈', '사무직');
+
+--10. 급여가 1500 ~ 2500 사이가 아닌 사원을 검색하시오.
+select * from employ where salary not between 1500 and 2500;
+
+--11. 업무가 '경리' 이거나 '부장' 이고, 급여가 3000 이 넘는 사원을 검색하시오.
+select * from employ where (job = '경리' or job = '부장') and salary > 3000;
+
+--12. 입사일이 2000년 이후인 사원을 검색하시오.
+select * from employ where hiredate >= '2000/01/01';
+
+--13. 이름에 '철' 이라는 문자를 포함하는 경우의 사원을 검색하시오.
+select * from employ where name like '%철%';
+
+--14. 보너스를 받지 않는(보너스가 null인) 사원을 검색하시오.
+select * from employ where bonus is null;
+
+--15. 입사일이 1999년도인 사원을 검색하시오.
+select * from employ where TO_NUMBER(TO_CHAR(hiredate,'YYYY'))=1999;
+
+--16. 급여가 3000 이상인 사원만 급여를 10% 인상하시오.
+update employ set salary = salary*1.1 where salary > 3000;
+
+--17. 2001년 이후에 입사한 사원을 삭제하시오.
+delete from employ where hiredate > '2001/01/01';
+rollback;
+-- GOOD TIME...
